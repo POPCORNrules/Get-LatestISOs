@@ -1,7 +1,9 @@
 #!/bin/env pwsh
 param (
     [switch]
-    $SkipDownload
+    $SkipDownload,
+    [switch]
+    $GetIMGs
 )
 
 $ISOs = @()
@@ -19,6 +21,7 @@ if (!($isLinux)) {
 try {
     # Ubuntu ISOs
     $ubuntu = Invoke-WebRequest "http://cdimage.ubuntu.com/ubuntu/releases/"
+    $kubuntu = Invoke-WebRequest "https://cdimage.ubuntu.com/kubuntu/releases/"
     $mate = Invoke-WebRequest "http://cdimage.ubuntu.com/ubuntu-mate/releases/"
     $PopOS = [xml](Invoke-WebRequest "https://pop-iso.sfo2.cdn.digitaloceanspaces.com/")
 
@@ -48,6 +51,19 @@ try {
     # NixOS
     $NixOS = Invoke-WebRequest "https://nixos.org/download.html"
 
+    if ($GetIMGs) {
+        $cloudready = Invoke-WebRequest "https://www.neverware.com/freedownload"
+
+        $cloudreadydir = "Installation-Discs"
+        $latestcloudready = ($cloudready.links | ? href -like https://*.cloudfront.net/cloudready-free-*-64bit/cloudready-free-*.zip).href
+        $latestcloudreadyIMG = $latestcloudready -replace ".zip",".RMD"
+        $oldIMG = (Get-ChildItem $cloudreadydir | Where-Object Name -Match "cloudready-free-\d\d.\d.\d\d-64bit.RMD").Name
+
+        if (!($oldIMG -match $latestcloudreadyIMG)) {
+            $ISOs += , @( $latestcloudready, "dir=$cloudreadydir" )
+        }
+    }
+
     $ubuntudir = "Installation-Discs/Linux/Ubuntu"
     $versions = ($ubuntu.Links | Select-Object -Skip 4 | Where-Object href -Match "\d\d\.04(\.\d)?/").href
     $latest2 = ($versions | Select-Object -last 2) -replace '/', ''
@@ -64,6 +80,21 @@ try {
         $ISOs += , @( $latestubuntu, "dir=$ubuntudir" )
     }
 
+    $kubuntudir = "Installation-Discs/Linux/Ubuntu"
+    $versions = ($kubuntu.Links | Select-Object -Skip 4 | Where-Object href -Match "\d\d\.04(\.\d)?/").href
+    $latest2 = ($versions | Select-Object -last 2) -replace '/', ''
+    if ($latest2[0] -match "$($latest2[1])\.\d") {
+        $latest = $latest2[0]
+    } else {
+        $latest = $latest2[1]
+    }
+    $latestkubuntu = "https://cdimage.ubuntu.com/kubuntu/releases/$latest/release/kubuntu-$latest-desktop-amd64.iso.torrent"
+    $latestkubuntuISO = ($latestkubuntu -split '/' | Select-Object -last 1) -replace '.torrent$', ''
+    $oldISO = (Get-ChildItem $kubuntudir | Where-Object Name -Match "kubuntu-\d\d\.04(\.\d)?-desktop-amd64.iso").Name
+
+    if (!($oldISO -match $latestkubuntuISO)) {
+        $ISOs += , @( $latestkubuntu, "dir=$kubuntudir" )
+    }
 
     $matedir = "Installation-Discs/Linux/Ubuntu"
     $versions = ($mate.Links | Select-Object -Skip 4 | Where-Object href -Match "\d\d\.04(\.\d)?/").href
@@ -162,7 +193,7 @@ try {
     $Manjarodir = "Installation-Discs/Linux/Archlinux"
     $latestManjaro = ($Manjaro.Links | ? href -like "*manjaro-kde-*.iso*"| select -first 1).href
     $latestManjaroISO = ($latestManjaro -split '/' | Select-Object -last 1)
-    $oldISO = (Get-ChildItem $Manjarodir | Where-Object Name -Match "manjaro-kde*.iso$").Name
+    $oldISO = (Get-ChildItem $Manjarodir | Where-Object Name -Match "manjaro-kde*").Name
 
     if (!($oldISO -match $latestManjaroISO)) {
         $ISOs += , @( $latestManjaro, "dir=$Manjarodir" )
@@ -171,7 +202,7 @@ try {
     $Endeavordir = "Installation-Discs/Linux/Archlinux"
     $latestEndeavor = ($Endeavor.Links | ? href -like "*https://github.com/endeavouros-team/ISO/releases/download/1-EndeavourOS-ISO-releases-archive*"| select -first 1).href
     $latestEndeavorISO = ($latestEndeavor -split '/' | Select-Object -last 1)
-    $oldISO = (Get-ChildItem $Endeavordir | Where-Object Name -Match "endeavouros-*-x86_64.iso$").Name
+    $oldISO = (Get-ChildItem $Endeavordir | Where-Object Name -Match "endeavouros-*").Name
 
     if (!($oldISO -match $latestEndeavorISO)) {
         $ISOs += , @( $latestEndeavor, "dir=$Endeavordir" )
@@ -221,6 +252,13 @@ try {
         Move-Item "$(Get-ChildItem "Installation-Discs/Linux" -Directory | Where-Object Name -match 'Fedora-Silverblue.*$')/*.iso" "Installation-Discs/Linux/"
         foreach ($folder in $((Get-ChildItem -Directory "Installation-Discs/Linux").Name | Where-Object { $_ -notmatch "Archlinux|Ubuntu|Gentoo" })) {
             Remove-Item -Recurse -Force "Installation-Discs/Linux/$folder/"
+        }
+
+        if ($GetIMGs) {
+            $cloudreadyZIP = Get-ChildItem $cloudreadydir | Where-Object Name -Match "cloudready-free-\d\d.\d.\d\d-64bit.zip"
+            Expand-Archive -Path $cloudreadyZIP -DestinationPath $cloudreadydir
+            Remove-Item $cloudreadyZIP
+            Move-Item "$cloudreadydir/$($cloudreadyZIP.Name -replace ".zip",".bin")" "$cloudreadydir/$($cloudreadyZIP.Name -replace ".zip",".RMD")"
         }
     }
 }
