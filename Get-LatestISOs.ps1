@@ -3,7 +3,9 @@ param (
     [switch]
     $SkipDownload,
     [switch]
-    $GetIMGs
+    $GetIMGs,
+    [switch]
+    $GetWin10
 )
 
 $ISOs = @()
@@ -16,6 +18,14 @@ if (!($isLinux)) {
     Invoke-WebRequest "https://github.com/aria2/aria2/releases/download/$latestaria2Version/aria2-$VersionNumber-win-64bit-build1.zip" -OutFile "$temp/aria2.zip"
     Expand-Archive $temp\aria2.zip -DestinationPath $temp
     $aria2_dir = ("$temp\aria2-*\" | Resolve-Path).Path
+}
+if ($GetWin10) {
+    $latestfidoRelease = Invoke-WebRequest https://github.com/pbatard/Fido/releases/latest -Headers @{"Accept" = "application/json" }
+    $fidojson = $latestfidoRelease.Content | ConvertFrom-Json
+    $latestfidoVersion = $fidojson.tag_name
+    Invoke-WebRequest "https://github.com/pbatard/Fido/archive/refs/tags/$latestfidoVersion.zip" -OutFile "$temp/fido.zip"
+    Expand-Archive $temp/fido.zip -DestinationPath $temp
+    $fido_dir = ("$temp\Fido-*\" | Resolve-Path).Path   
 }
 
 try {
@@ -63,6 +73,18 @@ try {
             $ISOs += , @( $latestcloudready, "dir=$cloudreadydir" )
         }
     }
+
+    if ($GetWin10) {
+        if ($isWindows) {
+            $powershell = "powershell"
+        } else {
+            $powershell = "pwsh"
+        }
+        $win10dir = "Installation-Discs/Windows"
+        $latestWin10 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 10 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl") -replace " ",""
+        $ISOs += , @( $latestWin10, "dir=$win10dir" )
+    }
+
 
     $ubuntudir = "Installation-Discs/Linux/Ubuntu"
     $versions = ($ubuntu.Links | Select-Object -Skip 4 | Where-Object href -Match "\d\d\.04(\.\d)?/").href
@@ -138,10 +160,10 @@ try {
 
 
     $tailsdir = "Other"
-    $latest = ($tails.Links | Select-Object -Skip 7 | Where-Object href -Match "tails-amd64-\d\.\d.iso.torrent").href
+    $latest = ($tails.Links | Select-Object -Skip 7 | Where-Object href -Match "tails-amd64-\d\.\d\d?.iso.torrent").href
     $latesttails = "https://tails.boum.org/torrents/files/$latest"
     $latesttailsISO = ($latesttails -split '/' | Select-Object -last 1) -replace '.torrent$', ''
-    $oldISO = (Get-ChildItem $tailsdir | Where-Object Name -Match "tails-amd64-\d\.\d.iso$").Name
+    $oldISO = (Get-ChildItem $tailsdir | Where-Object Name -Match "tails-amd64-\d\.\d\d?.iso$").Name
 
     if (!($oldISO -match $latesttailsISO)) {
         $ISOs += , @( $latesttails, "dir=$tailsdir", "select-file=1" )
@@ -241,6 +263,9 @@ try {
             & $aria2_dir/aria2c.exe --seed-time=0 -i "./links.txt" -c -j2 --rpc-save-upload-metadata false --bt-remove-unselected-file true
             Remove-Item -Recurse -Force "$aria2_dir", "$temp/aria2.zip"
         }
+	if ($GetWin10) {
+            Remove-Item -Recurse -Force "$fido_dir", "$temp/fido.zip"
+	}
         Get-ChildItem . -recurse -include *.torrent | Remove-Item
         Remove-Item "./links.txt"
         
