@@ -50,6 +50,7 @@ try {
     # Other ISOs
     $MXLinux = Invoke-WebRequest "https://mirrors.evowise.com/mxlinux-iso/MX/Final/"
     $tails = Invoke-WebRequest "https://tails.boum.org/torrents/files/"
+    $zorin = Invoke-WebRequest "https://distro.ibiblio.org/zorinos/"
 
     # Fedora Silverblue
     $Silverblue = Invoke-WebRequest "https://torrent.fedoraproject.org/"
@@ -178,6 +179,15 @@ try {
         $ISOs += , @( $latesttails, "dir=$tailsdir", "select-file=1" )
     }
 
+    $zorindir = "Installation-Discs/Linux/Zorin-OS"
+    $versions = ($zorin.links | select-object -last 1).href
+    $latestzorin = "https://distro.ibiblio.org/zorinos/$latest/Zorin-OS-$latest(\.\d)?-Core-64-bit.iso"
+    $latestzorinISO = $latestzorin -split '/' | Select-Object -last 1
+    $oldISO = (Get-ChildItem $zorindir | Where-Object Name -Match "Zorin-OS-\d\d(\.\d)?-Core-64-bit$").Name
+
+    if (!($oldISO -match $latestzorinISO)) {
+        $ISOs += , @( $latestzorin, "dir=$zorindir" )
+    }
 
     $Archdir = "Installation-Discs/Linux/Archlinux"
     $latestArch = ($Arch.Links | Where-Object HREF -Match "^magnet").href -Replace "&amp;", "&"
