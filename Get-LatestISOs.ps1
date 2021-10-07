@@ -5,7 +5,9 @@ param (
     [switch]
     $GetIMGs,
     [switch]
-    $GetWin10
+    $GetWin10,
+    [switch]
+    $GetWin11
 )
 
 $ISOs = @()
@@ -19,13 +21,19 @@ if (!($isLinux)) {
     Expand-Archive $temp\aria2.zip -DestinationPath $temp
     $aria2_dir = ("$temp\aria2-*\" | Resolve-Path).Path
 }
-if ($GetWin10) {
+if ($GetWin10 -or $GetWin11) {
     $latestfidoRelease = Invoke-WebRequest https://github.com/pbatard/Fido/releases/latest -Headers @{"Accept" = "application/json" }
     $fidojson = $latestfidoRelease.Content | ConvertFrom-Json
     $latestfidoVersion = $fidojson.tag_name
     Invoke-WebRequest "https://github.com/pbatard/Fido/archive/refs/tags/$latestfidoVersion.zip" -OutFile "$temp/fido.zip"
     Expand-Archive $temp/fido.zip -DestinationPath $temp
-    $fido_dir = ("$temp\Fido-*\" | Resolve-Path).Path   
+    $fido_dir = ("$temp\Fido-*\" | Resolve-Path).Path
+
+    if ($isWindows) {
+        $powershell = "powershell"
+    } else {
+        $powershell = "pwsh"
+    } 
 }
 
 try {
@@ -75,14 +83,15 @@ try {
     }
 
     if ($GetWin10) {
-        if ($isWindows) {
-            $powershell = "powershell"
-        } else {
-            $powershell = "pwsh"
-        }
         $win10dir = "Installation-Discs/Windows"
-        $latestWin10 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 10 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl") -replace " ",""
+        $latestWin10 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 10 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl")[0] -replace " ",""
         $ISOs += , @( $latestWin10, "dir=$win10dir" )
+    }
+
+    if ($GetWin11) {
+        $win11dir = "Installation-Discs/Windows"
+        $latestWin11 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 11 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl")[0] -replace " ",""
+        $ISOs += , @( $latestWin11, "dir=$win11dir" )
     }
 
 
