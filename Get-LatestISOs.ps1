@@ -295,7 +295,7 @@ try {
         }
 
         Move-Item "$(Get-ChildItem "Installation-Discs/Linux" -Directory | Where-Object Name -match 'Fedora-Silverblue.*$')/*.iso" "Installation-Discs/Linux/"
-        foreach ($folder in $((Get-ChildItem -Directory "Installation-Discs/Linux").Name | Where-Object { $_ -notmatch "Archlinux|Ubuntu|Gentoo" })) {
+        foreach ($folder in $((Get-ChildItem -Directory "Installation-Discs/Linux").Name | Where-Object { $_ -notmatch "Archlinux|Ubuntu|Gentoo|Zorin-OS" })) {
             Remove-Item -Recurse -Force "Installation-Discs/Linux/$folder/"
         }
 
