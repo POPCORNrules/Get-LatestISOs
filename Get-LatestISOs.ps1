@@ -180,10 +180,11 @@ try {
     }
 
     $zorindir = "Installation-Discs/Linux/Zorin-OS"
-    $versions = ($zorin.links | select-object -last 1).href
-    $latestzorin = "https://distro.ibiblio.org/zorinos/$latest/Zorin-OS-$latest(\.\d)?-Core-64-bit.iso"
+    $versions = ($zorin.links | select-object -last 1).href.Trim('/')
+    $latest = ((Invoke-WebRequest "https://distro.ibiblio.org/zorinos/$versions").links | Where-Object href -match "Zorin-OS-\d\d(\.\d)?-Core-64-bit\.iso$").href
+    $latestzorin = "https://distro.ibiblio.org/zorinos/$versions/$latest"
     $latestzorinISO = $latestzorin -split '/' | Select-Object -last 1
-    $oldISO = (Get-ChildItem $zorindir | Where-Object Name -Match "Zorin-OS-\d\d(\.\d)?-Core-64-bit$").Name
+    $oldISO = (Get-ChildItem $zorindir | Where-Object Name -Match "Zorin-OS-\d\d(\.\d)?-Core-64-bit.iso$").Name
 
     if (!($oldISO -match $latestzorinISO)) {
         $ISOs += , @( $latestzorin, "dir=$zorindir" )
