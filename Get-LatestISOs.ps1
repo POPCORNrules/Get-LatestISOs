@@ -76,8 +76,8 @@ try {
 
         $cloudreadydir = "Installation-Discs"
         $latestcloudready = ($cloudready.links | ? href -like https://*.cloudfront.net/cloudready-free-*-64bit/cloudready-free-*.zip).href
-        $latestcloudreadyIMG = $latestcloudready -replace ".zip",".RMD"
-        $oldIMG = (Get-ChildItem $cloudreadydir | Where-Object Name -Match "cloudready-free-\d\d.\d.\d\d?-64bit.RMD").Name
+        $latestcloudreadyIMG = $latestcloudready -replace ".zip",".img"
+        $oldIMG = (Get-ChildItem $cloudreadydir | Where-Object Name -Match "cloudready-free-\d\d.\d.\d\d?-64bit.img").Name
 
         if (!($oldIMG -match $latestcloudreadyIMG)) {
             $ISOs += , @( $latestcloudready, "dir=$cloudreadydir" )
