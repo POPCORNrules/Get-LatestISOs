@@ -300,7 +300,7 @@ try {
         }
 
         if ($GetIMGs) {
-            $cloudreadyZIP = Get-ChildItem $cloudreadydir | Where-Object Name -Match "cloudready-free-\d\d.\d.\d\d-64bit.zip"
+            $cloudreadyZIP = Get-ChildItem $cloudreadydir | Where-Object Name -Match "cloudready-free-\d\d.\d.\d\d?-64bit.zip"
             Expand-Archive -Path $cloudreadyZIP -DestinationPath $cloudreadydir
             Remove-Item $cloudreadyZIP
             Move-Item "$cloudreadydir/$($cloudreadyZIP.Name -replace ".zip",".bin")" "$cloudreadydir/$($cloudreadyZIP.Name -replace ".zip",".RMD")"
