@@ -51,6 +51,7 @@ try {
     $MXLinux = Invoke-WebRequest "https://mirrors.evowise.com/mxlinux-iso/MX/Final/"
     $tails = Invoke-WebRequest "https://tails.boum.org/torrents/files/"
     $zorin = Invoke-WebRequest "https://distro.ibiblio.org/zorinos/"
+    $void = Invoke-WebRequest "https://alpha.de.repo.voidlinux.org/live/current/"
 
     # Fedora Silverblue
     $Silverblue = Invoke-WebRequest "https://torrent.fedoraproject.org/"
@@ -269,6 +270,15 @@ try {
         $ISOs += , @( $latest, "dir=$NixOSdir", "out=$latestNixOSISO" )
     }
 
+    $voiddir = "Installation-Discs/Linux"
+    $latestvoidISO = ($void.Links | Where-Object href -match "void-live-x86_64-\d\d\d\d\d\d\d\d-xfce.iso").href
+    $latestvoid = "https://alpha.de.repo.voidlinux.org/live/current/$latestvoidISO"
+    $oldISO = (Get-ChildItem $voiddir | Where-Object Name -Match "void-live-x86_64-\d\d\d\d\d\d\d\d-xfce.iso").Name
+
+    if (!($oldISO -match $latestvoidISO)) {
+        $ISOs += , @( $latestvoid, "dir=$voiddir", "out=$latestvoidISO" )
+    }
+    
     $ISOs | ForEach-Object { $_ -join "`n`t" } |  Out-File -Encoding "UTF8" "./links.txt"
     if ($psversiontable.PSVersion.Major -le 5 ) {
         $content = Get-Content "./links.txt"
