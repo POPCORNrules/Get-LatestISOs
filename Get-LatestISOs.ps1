@@ -182,10 +182,19 @@ try {
 
     $zorindir = "Installation-Discs/Linux/Zorin-OS"
     $versions = ($zorin.links | select-object -last 1).href.Trim('/')
-    $latest = ((Invoke-WebRequest "https://distro.ibiblio.org/zorinos/$versions").links | Where-Object href -match "Zorin-OS-\d\d(\.\d)?-Core-64-bit\.iso$").href
+    $latest = ((Invoke-WebRequest "https://distro.ibiblio.org/zorinos/$versions").links | Where-Object href -match "Zorin-OS-\d\d(\.\d)?-Core-64-bit\.iso$").href | Select-Object -Last 1
     $latestzorin = "https://distro.ibiblio.org/zorinos/$versions/$latest"
     $latestzorinISO = $latestzorin -split '/' | Select-Object -last 1
     $oldISO = (Get-ChildItem $zorindir | Where-Object Name -Match "Zorin-OS-\d\d(\.\d)?-Core-64-bit.iso$").Name
+
+    if (!($oldISO -match $latestzorinISO)) {
+        $ISOs += , @( $latestzorin, "dir=$zorindir" )
+    }
+
+    $latest = ((Invoke-WebRequest "https://distro.ibiblio.org/zorinos/$versions").links | Where-Object href -match "Zorin-OS-\d\d(\.\d)?-Lite-64-bit\.iso$").href | Select-Object -Last 1
+    $latestzorin = "https://distro.ibiblio.org/zorinos/$versions/$latest"
+    $latestzorinISO = $latestzorin -split '/' | Select-Object -last 1
+    $oldISO = (Get-ChildItem $zorindir | Where-Object Name -Match "Zorin-OS-\d\d(\.\d)?-Lite-64-bit.iso$").Name
 
     if (!($oldISO -match $latestzorinISO)) {
         $ISOs += , @( $latestzorin, "dir=$zorindir" )
@@ -293,9 +302,9 @@ try {
             & $aria2_dir/aria2c.exe --seed-time=0 -i "./links.txt" -c -j2 --rpc-save-upload-metadata false --bt-remove-unselected-file true
             Remove-Item -Recurse -Force "$aria2_dir", "$temp/aria2.zip"
         }
-	if ($GetWin10) {
+        if ($GetWin10) {
             Remove-Item -Recurse -Force "$fido_dir", "$temp/fido.zip"
-	}
+        }
         Get-ChildItem . -recurse -include *.torrent | Remove-Item
         Remove-Item "./links.txt"
         
