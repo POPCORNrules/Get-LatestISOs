@@ -75,8 +75,8 @@ try {
         $cloudready = Invoke-WebRequest "https://www.neverware.com/freedownload"
 
         $cloudreadydir = "Installation-Discs"
-        $latestcloudready = ($cloudready.links | ? href -like https://*.cloudfront.net/cloudready-free-*-64bit/cloudready-free-*.zip).href
-        $latestcloudreadyIMG = $latestcloudready -replace ".zip",".img"
+        $latestcloudready = ($cloudready.links | Where-Object href -like https://*.cloudfront.net/cloudready-free-*-64bit/cloudready-free-*.zip).href
+        $latestcloudreadyIMG = $latestcloudready -replace ".zip", ".img"
         $oldIMG = (Get-ChildItem $cloudreadydir | Where-Object Name -Match "cloudready-free-\d\d.\d.\d\d?-64bit.img").Name
 
         if (!($oldIMG -match $latestcloudreadyIMG)) {
@@ -86,13 +86,13 @@ try {
 
     if ($GetWin10) {
         $win10dir = "Installation-Discs/Windows"
-        $latestWin10 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 10 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl")[0] -replace " ",""
+        $latestWin10 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 10 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl")[0] -replace " ", ""
         $ISOs += , @( $latestWin10, "dir=$win10dir" )
     }
 
     if ($GetWin11) {
         $win11dir = "Installation-Discs/Windows"
-        $latestWin11 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 11 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl")[0] -replace " ",""
+        $latestWin11 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 11 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl")[0] -replace " ", ""
         $ISOs += , @( $latestWin11, "dir=$win11dir" )
     }
 
@@ -212,7 +212,7 @@ try {
 
     # https://bouncer.gentoo.org/fetch/root/all/releases/amd64/autobuilds/20210127T214504Z/install-amd64-minimal-20210127T214504Z.iso
     $Gentoodir = "Installation-Discs/Linux/Gentoo"
-    $latestGentoo = ($Gentoo.links | ? href -like "*install-amd64-minimal-*.iso").href|select -first 1
+    $latestGentoo = ($Gentoo.links | Where-Object href -like "*install-amd64-minimal-*.iso").href | Select-Object -first 1
     $latestGentooISO = ($latestGentoo -split '/' | Select-Object -last 1)
     $latestdate = $latestGentoo -split '/' | Select-Object -last 2 | Select-Object -First 1
     $lateststage3 = "https://bouncer.gentoo.org/fetch/root/all/releases/amd64/autobuilds/$latestdate/stage3-amd64-systemd-$latestdate.tar.xz"
@@ -225,7 +225,7 @@ try {
     }
 
     $FreeBSDdir = "Installation-Discs"
-    $latestFreeBSD = ($FreeBSD.Links | ? title -like "*-RELEASE"|select -last 1).title -replace "-RELEASE", ""
+    $latestFreeBSD = ($FreeBSD.Links | Where-Object title -like "*-RELEASE" | Select-Object -last 1).title -replace "-RELEASE", ""
     $latestFreeBSDISO = "https://download.freebsd.org/ftp/releases/amd64/amd64/ISO-IMAGES/$latestFreeBSD/FreeBSD-$latestFreeBSD-RELEASE-amd64-dvd1.iso"
     $oldISO = (Get-ChildItem $FreeBSDdir | Where-Object Name -Match "FreeBSD-\d\d\.\d-RELEASE-amd64-dvd1.iso$").Name
 
@@ -234,7 +234,7 @@ try {
     }
 
     $Manjarodir = "Installation-Discs/Linux/Archlinux"
-    $latestManjaro = ($Manjaro.Links | ? href -like "*manjaro-kde-*.iso*"| select -first 1).href
+    $latestManjaro = ($Manjaro.Links | Where-Object href -like "*manjaro-kde-*.iso*" | Select-Object -first 1).href
     $latestManjaroISO = ($latestManjaro -split '/' | Select-Object -last 1)
     $oldISO = (Get-ChildItem $Manjarodir | Where-Object Name -Match "manjaro-kde*").Name
 
@@ -243,7 +243,7 @@ try {
     }
 
     $Endeavordir = "Installation-Discs/Linux/Archlinux"
-    $latestEndeavor = ($Endeavor.Links | ? href -like "*https://github.com/endeavouros-team/ISO/releases/download/1-EndeavourOS-ISO-releases-archive*"| select -first 1).href
+    $latestEndeavor = ($Endeavor.Links | Where-Object href -like "*https://github.com/endeavouros-team/ISO/releases/download/1-EndeavourOS-ISO-releases-archive*" | Select-Object -first 1).href
     $latestEndeavorISO = ($latestEndeavor -split '/' | Select-Object -last 1)
     $oldISO = (Get-ChildItem $Endeavordir | Where-Object Name -Match "endeavouros-*").Name
 
