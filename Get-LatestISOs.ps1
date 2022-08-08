@@ -161,7 +161,7 @@ try {
     $PopOSdir = "Installation-Discs/Linux"
     $versions = $PopOS.ListBucketResult.Contents.Key | Where-Object { $_ -Match "intel_\d(\d)?\.iso$" }
     $latest = ($versions | Select-Object -last 1)
-    $latestPopOS = "https://pop-iso.sfo2.cdn.digitaloceanspaces.com/$latest"
+    $latestPopOS = "https://iso.pop-os.org/$latest"
     $latestPopOSISO = ($latestPopOS -split '/' | Select-Object -last 1)
     $oldISO = (Get-ChildItem $PopOSdir | Where-Object Name -Match "pop-os_\d\d\.\d\d(\.\d)?_amd64_intel_\d(\d)?").Name
 
