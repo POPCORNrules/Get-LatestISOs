@@ -57,7 +57,7 @@ try {
     $Silverblue = Invoke-WebRequest "https://torrent.fedoraproject.org/"
 
     # Manjaro
-    $Manjaro = Invoke-WebRequest "https://manjaro.org/downloads/official/kde/"
+    $Manjaro = Invoke-WebRequest "https://manjaro.org/download/"
 
     # EndeavorOS
     $Endeavor = Invoke-WebRequest "https://endeavouros.com/latest-release/"
@@ -244,7 +244,7 @@ try {
 
     $Manjarodir = "Installation-Discs/Linux/Archlinux"
     $latestManjaro = ($Manjaro.Links | Where-Object href -like "*manjaro-kde-*.iso*" | Select-Object -first 1).href
-    $latestManjaroISO = ($latestManjaro -split '/' | Select-Object -last 1)
+    $latestManjaroISO = ($latestManjaro -split '/' | Select-Object -last 1) -replace ".torrent", ""
     $oldISO = (Get-ChildItem $Manjarodir | Where-Object Name -Match "manjaro-kde*").Name
 
     if (!($oldISO -match $latestManjaroISO)) {
