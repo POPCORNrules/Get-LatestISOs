@@ -262,7 +262,7 @@ try {
     
     $Silverbluedir = "Installation-Discs/Linux"
     $latestSilverblue = ($Silverblue.links | Where-Object href -match 'Fedora-silverblue-ostree-x86_64.*.torrent' | Select-Object -First 1).HREF
-    $latestSilverblueISO = ($(Invoke-WebRequest "https://silverblue.fedoraproject.org/download").Links.HREF | Select-Object -first 7 | Select-Object -last 1) -split '/' | Select-Object -last 1
+    $latestSilverblueISO = ($(Invoke-WebRequest "https://silverblue.fedoraproject.org/download").Links | Where-Object HREF -match 'Fedora-silverblue-ostree-x86_64.*').href -split '/' | Select-Object -Last 1
     $oldISO = (Get-ChildItem $Silverbluedir | Where-Object Name -Match "Fedora-silverblue-ostree-x86_64.*.iso").Name
 
     if (!($oldISO -match $latestSilverblueISO)) {
