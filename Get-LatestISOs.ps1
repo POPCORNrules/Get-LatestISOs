@@ -41,7 +41,7 @@ try {
     $ubuntu = Invoke-WebRequest "http://cdimage.ubuntu.com/ubuntu/releases/"
     $kubuntu = Invoke-WebRequest "https://cdimage.ubuntu.com/kubuntu/releases/"
     $mate = Invoke-WebRequest "http://cdimage.ubuntu.com/ubuntu-mate/releases/"
-    $PopOS = [xml](Invoke-WebRequest "https://pop-iso.sfo2.cdn.digitaloceanspaces.com/")
+    $PopOS = [xml](Invoke-WebRequest "https://iso.pop-os.org/")
 
     # Arch ISOs
     $Arch = Invoke-WebRequest "https://www.archlinux.org/download/"
