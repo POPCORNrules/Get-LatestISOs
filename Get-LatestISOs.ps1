@@ -319,10 +319,11 @@ try {
         }
 
         if ($GetIMGs) {
-            $ChromeOSZIP = Get-ChildItem $ChromeOSdir | Where-Object Name -Match "chromeos_\d+.\d+.\d+_reven_recovery_stable-channel_mp-v\d+.img"
+            $ChromeOSZIP = Get-ChildItem $ChromeOSdir | Where-Object Name -Match "chromeos_\d+.\d+.\d+_reven_recovery_stable-channel_mp-v\d+.bin.zip"
+            $ChromeOSfile = $ChromeOSZIP.Name -replace ".zip", ""
             Expand-Archive -Path $ChromeOSZIP -DestinationPath $ChromeOSdir
             Remove-Item $ChromeOSZIP
-            Move-Item "$ChromeOSdir/$($ChromeOSZIP.Name -replace ".zip",".bin")" "$ChromeOSdir/$($ChromeOSZIP.Name -replace ".zip",".img")"
+            Move-Item "$ChromeOSdir/$ChromeOSfile" "$ChromeOSdir/$($ChromeOSfile -replace ".bin",".img")"
         }
     }
 }
