@@ -72,15 +72,15 @@ try {
     $NixOS = Invoke-WebRequest "https://nixos.org/download.html"
 
     if ($GetIMGs) {
-        $cloudready = Invoke-WebRequest "https://www.neverware.com/freedownload"
+        $ChromeOS = Invoke-WebRequest "https://dl.google.com/dl/edgedl/chromeos/recovery/cloudready_recovery.json" | ConvertFrom-Json
 
-        $cloudreadydir = "Installation-Discs"
-        $latestcloudready = ($cloudready.links | Where-Object href -like https://*.cloudfront.net/cloudready-free-*-64bit/cloudready-free-*.zip).href
-        $latestcloudreadyIMG = $latestcloudready -replace ".zip", ".img"
-        $oldIMG = (Get-ChildItem $cloudreadydir | Where-Object Name -Match "cloudready-free-\d\d.\d.\d\d?-64bit.img").Name
+        $ChromeOSdir = "Installation-Discs"
+        $latestChromeOS = $ChromeOS.url
+        $latestChromeOSIMG = $ChromeOS.file -replace ".bin", ".img"
+        $oldIMG = (Get-ChildItem $ChromeOSdir | Where-Object Name -Match "chromeos_\d+.\d+.\d+_reven_recovery_stable-channel_mp-v\d+.img").Name
 
-        if (!($oldIMG -match $latestcloudreadyIMG)) {
-            $ISOs += , @( $latestcloudready, "dir=$cloudreadydir" )
+        if (!($oldIMG -match $latestChromeOSIMG)) {
+            $ISOs += , @( $latestChromeOS, "dir=$ChromeOSdir" )
         }
     }
 
@@ -319,10 +319,10 @@ try {
         }
 
         if ($GetIMGs) {
-            $cloudreadyZIP = Get-ChildItem $cloudreadydir | Where-Object Name -Match "cloudready-free-\d\d.\d.\d\d?-64bit.zip"
-            Expand-Archive -Path $cloudreadyZIP -DestinationPath $cloudreadydir
-            Remove-Item $cloudreadyZIP
-            Move-Item "$cloudreadydir/$($cloudreadyZIP.Name -replace ".zip",".bin")" "$cloudreadydir/$($cloudreadyZIP.Name -replace ".zip",".RMD")"
+            $ChromeOSZIP = Get-ChildItem $ChromeOSdir | Where-Object Name -Match "chromeos_\d+.\d+.\d+_reven_recovery_stable-channel_mp-v\d+.img"
+            Expand-Archive -Path $ChromeOSZIP -DestinationPath $ChromeOSdir
+            Remove-Item $ChromeOSZIP
+            Move-Item "$ChromeOSdir/$($ChromeOSZIP.Name -replace ".zip",".bin")" "$ChromeOSdir/$($ChromeOSZIP.Name -replace ".zip",".img")"
         }
     }
 }
