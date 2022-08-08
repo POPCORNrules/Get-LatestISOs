@@ -171,10 +171,10 @@ try {
 
 
     $tailsdir = "Other"
-    $latest = ($tails.Links | Select-Object -Skip 7 | Where-Object href -Match "tails-amd64-\d\.\d\d?.iso.torrent").href
+    $latest = ($tails.Links | Select-Object -Skip 7 | Where-Object href -Match "tails-amd64-\d\.\d+(.\d)?.iso.torrent").href
     $latesttails = "https://tails.boum.org/torrents/files/$latest"
     $latesttailsISO = ($latesttails -split '/' | Select-Object -last 1) -replace '.torrent$', ''
-    $oldISO = (Get-ChildItem $tailsdir | Where-Object Name -Match "tails-amd64-\d\.\d\d?.iso$").Name
+    $oldISO = (Get-ChildItem $tailsdir | Where-Object Name -Match "tails-amd64-\d\.\d+(.\d)?.iso$").Name
 
     if (!($oldISO -match $latesttailsISO)) {
         $ISOs += , @( $latesttails, "dir=$tailsdir", "select-file=1" )
