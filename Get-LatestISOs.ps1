@@ -41,7 +41,6 @@ try {
     $ubuntu = Invoke-WebRequest "http://cdimage.ubuntu.com/ubuntu/releases/"
     $kubuntu = Invoke-WebRequest "https://cdimage.ubuntu.com/kubuntu/releases/"
     $mate = Invoke-WebRequest "http://cdimage.ubuntu.com/ubuntu-mate/releases/"
-    $PopOS = [xml](Invoke-WebRequest "https://iso.pop-os.org/")
 
     # Arch ISOs
     $Arch = Invoke-WebRequest "https://www.archlinux.org/download/"
@@ -157,19 +156,6 @@ try {
     if (!($oldISO -match $latestMXLinuxISO)) {
         $ISOs += , @( $latestMXLinux, "dir=$MXLinuxdir" )
     }
-
-
-    $PopOSdir = "Installation-Discs/Linux"
-    $versions = $PopOS.ListBucketResult.Contents.Key | Where-Object { $_ -Match "intel_\d(\d)?\.iso$" }
-    $latest = ($versions | Select-Object -last 1)
-    $latestPopOS = "https://iso.pop-os.org/$latest"
-    $latestPopOSISO = ($latestPopOS -split '/' | Select-Object -last 1)
-    $oldISO = (Get-ChildItem $PopOSdir | Where-Object Name -Match "pop-os_\d\d\.\d\d(\.\d)?_amd64_intel_\d(\d)?").Name
-
-    if (!($oldISO -match $latestPopOSISO)) {
-        $ISOs += , @( $latestPopOS, "dir=$PopOSdir" )
-    }
-
 
     $tailsdir = "Other"
     $latest = ($tails.Links | Select-Object -Skip 7 | Where-Object href -Match "tails-amd64-\d\.\d+(.\d)?.iso.torrent").href
