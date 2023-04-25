@@ -77,9 +77,8 @@ try {
         $latestChromeOS = $ChromeOS.url
         $latestChromeOSIMG = $ChromeOS.file -replace ".bin", ".img"
         $oldIMG = (Get-ChildItem $ChromeOSdir | Where-Object Name -Match "chromeos_\d+.\d+.\d+_reven_recovery_stable-channel_mp-v\d+.img").Name
-        $chromematch = $oldIMG -match $latestChromeOSIMG
 
-        if (-not ($chromematch)) {
+        if (!($oldIMG -match $latestChromeOSIMG)) {
             $ISOs += , @( $latestChromeOS, "dir=$ChromeOSdir" )
         }
     }
@@ -305,7 +304,7 @@ try {
             Remove-Item -Recurse -Force "Installation-Discs/Linux/$folder/"
         }
 
-        if (($GetIMGs) -and ( -not ($chromematch))) {
+        if ($GetIMGs) {
             $ChromeOSZIP = Get-ChildItem $ChromeOSdir | Where-Object Name -Match "chromeos_\d+.\d+.\d+_reven_recovery_stable-channel_mp-v\d+.bin.zip"
             $ChromeOSfile = $ChromeOSZIP.Name -replace ".zip", ""
             Expand-Archive -Path $ChromeOSZIP -DestinationPath $ChromeOSdir
