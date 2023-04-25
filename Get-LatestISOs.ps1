@@ -85,13 +85,13 @@ try {
 
     if ($GetWin10) {
         $win10dir = "Installation-Discs/Windows"
-        $latestWin10 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 10 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl")[0] -replace " ", ""
+        $latestWin10 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 10 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl") -replace " ", ""
         $ISOs += , @( $latestWin10, "dir=$win10dir" )
     }
 
     if ($GetWin11) {
         $win11dir = "Installation-Discs/Windows"
-        $latestWin11 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 11 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl")[0] -replace " ", ""
+        $latestWin11 = (Invoke-Expression "$powershell $fido_dir/Fido.ps1 -Win 11 -Ed Pro -Arch x64 -Lang English -Rel latest -GetUrl") -replace " ", ""
         $ISOs += , @( $latestWin11, "dir=$win11dir" )
     }
 
