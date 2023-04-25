@@ -67,9 +67,6 @@ try {
     # FreeBSD
     $FreeBSD = Invoke-WebRequest "https://download.freebsd.org/ftp/releases/amd64/amd64/"
 
-    # NixOS
-    $NixOS = Invoke-WebRequest "https://nixos.org/download.html"
-
     if ($GetIMGs) {
         $ChromeOS = Invoke-WebRequest "https://dl.google.com/dl/edgedl/chromeos/recovery/cloudready_recovery.json" | ConvertFrom-Json
 
@@ -253,16 +250,6 @@ try {
 
     if (!($oldISO -match $latestSilverblueISO)) {
         $ISOs += , @( $latestSilverblue, "dir=$Silverbluedir", "select-file=2" )
-    }
-
-    $NixOSdir = "Installation-Discs/Linux"
-    $latest = ($NixOS.Links | Where-Object href -like "*channels.nixos.org*plasma*.iso").href
-    $latestNixOS = ($latest -split '/' | Select-Object -Last 2 | Select-Object -First 1)
-    $latestNixOSISO = "$latestNixOS-x86_64.iso"
-    $oldISO = (Get-ChildItem $NixOSdir | Where-Object Name -Match "nixos-\d\d\.\d\d-x86_64.iso").Name
-
-    if (!($oldISO -match $latestNixOSISO)) {
-        $ISOs += , @( $latest, "dir=$NixOSdir", "out=$latestNixOSISO" )
     }
 
     $voiddir = "Installation-Discs/Linux"
