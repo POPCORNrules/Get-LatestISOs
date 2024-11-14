@@ -252,6 +252,14 @@ try {
         $ISOs += , @( $latestSilverblue, "dir=$Silverbluedir", "select-file=2" )
     }
 
+    $Kinoitedir = "Installation-Discs/Linux"
+    $latestKinoite = ($Kinoite.links | Where-Object href -match 'Fedora-Kinoite-ostree-x86_64.*\d.torrent' | Select-Object -Last 1).HREF
+    $latestKinoiteISO = $latestKinoite -split '/' | Select-Object -Last 1
+    $oldISO = (Get-ChildItem $Kinoitedir | Where-Object Name -Match "Fedora-Kinoite-ostree-x86_64.*.iso").Name
+
+    if (!($oldISO -match $latestKinoiteISO)) {
+        $ISOs += , @( $latestKinoite, "dir=$Kinoitedir", "select-file=2" )
+    }
     $voiddir = "Installation-Discs/Linux"
     $latestvoidISO = ($void.Links | Where-Object href -match "void-live-x86_64-\d\d\d\d\d\d\d\d-xfce.iso").href
     $latestvoid = "https://alpha.de.repo.voidlinux.org/live/current/$latestvoidISO"
