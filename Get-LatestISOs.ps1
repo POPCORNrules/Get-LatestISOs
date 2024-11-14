@@ -235,7 +235,7 @@ try {
     }
 
     $Endeavordir = "Installation-Discs/Linux/Archlinux"
-    $latestEndeavor = ($Endeavor.Links | Where-Object href -like "*https://github.com/endeavouros-team/ISO/releases/download/1-EndeavourOS-ISO-releases-archive*" | Select-Object -first 1).href
+    $latestEndeavor = ($Endeavor.Links | Where-Object href -like "*https://mirrors.gigenet.com/endeavouros/iso/EndeavourOS_Endeavour*" | Select-Object -first 1).href
     $latestEndeavorISO = ($latestEndeavor -split '/' | Select-Object -last 1)
     $oldISO = (Get-ChildItem $Endeavordir | Where-Object Name -Match "endeavouros-*").Name
 
