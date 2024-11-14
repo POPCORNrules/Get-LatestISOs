@@ -262,7 +262,7 @@ try {
     }
     $voiddir = "Installation-Discs/Linux"
     $latestvoidISO = ($void.Links | Where-Object href -match "void-live-x86_64-\d\d\d\d\d\d\d\d-xfce.iso").href
-    $latestvoid = "https://alpha.de.repo.voidlinux.org/live/current/$latestvoidISO"
+    $latestvoid = "https://repo-default.voidlinux.org/live/current/$latestvoidISO"
     $oldISO = (Get-ChildItem $voiddir | Where-Object Name -Match "void-live-x86_64-\d\d\d\d\d\d\d\d-xfce.iso").Name
 
     if (!($oldISO -match $latestvoidISO)) {
