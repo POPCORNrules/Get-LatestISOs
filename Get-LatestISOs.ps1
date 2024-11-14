@@ -47,16 +47,17 @@ try {
     $Artix = Invoke-WebRequest "https://iso.artixlinux.org/isos.php"
 
     # Other ISOs
-    $MXLinux = Invoke-WebRequest "https://mirrors.evowise.com/mxlinux-iso/MX/Final/"
+    $MXLinux = Invoke-WebRequest "https://mxlinux.org/download-links/"
     $tails = Invoke-WebRequest "https://tails.boum.org/torrents/files/"
     $zorin = Invoke-WebRequest "https://distro.ibiblio.org/zorinos/"
-    $void = Invoke-WebRequest "https://alpha.de.repo.voidlinux.org/live/current/"
+    $void = Invoke-WebRequest "https://repo-default.voidlinux.org/live/current/"
 
-    # Fedora Silverblue
+    # Fedora Atomic
     $Silverblue = Invoke-WebRequest "https://torrent.fedoraproject.org/"
+    $Kinoite = $Silverblue
 
     # Manjaro
-    $Manjaro = Invoke-WebRequest "https://manjaro.org/download/"
+    $Manjaro = Invoke-WebRequest "https://manjaro.org/products/download/x86"
 
     # EndeavorOS
     $Endeavor = Invoke-WebRequest "https://endeavouros.com/latest-release/"
