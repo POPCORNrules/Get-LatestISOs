@@ -144,11 +144,10 @@ try {
 
 
     $MXLinuxdir = "Installation-Discs/Linux"
-    $versions = ($MXLinux.Links | Select-Object -Skip 1 | Where-Object href -Match "\d_x64.iso$").href
-    $latest = ($versions | Select-Object -last 1)
-    $latestMXLinux = "https://mirrors.evowise.com/mxlinux-iso/MX/Final/$latest"
-    $latestMXLinuxISO = ($latestMXLinux -split '/' | Select-Object -last 1)
-    $oldISO = (Get-ChildItem $MXLinuxdir | Where-Object Name -Match "MX-.*\d_x64.iso").Name
+    $versions = ($MXLinux.Links | Where-Object href -Match "https://sourceforge.net/projects/mx-linux/files/Final/Xfce/MX-.*_ahs_x64.iso/download").href
+    $latestMXLinux = ($versions | Select-Object -last 1)
+    $latestMXLinuxISO = ($latestMXLinux -split '/' | Select-Object -skiplast 1 | Select-Object -last 1)
+    $oldISO = (Get-ChildItem $MXLinuxdir | Where-Object Name -Match "MX-.*\d_ahs_x64.iso").Name
 
     if (!($oldISO -match $latestMXLinuxISO)) {
         $ISOs += , @( $latestMXLinux, "dir=$MXLinuxdir" )
