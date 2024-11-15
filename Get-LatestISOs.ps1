@@ -5,6 +5,8 @@ param (
     [switch]
     $GetIMGs,
     [switch]
+    $GetRMDs
+    [switch]
     $GetWin10,
     [switch]
     $GetWin11
@@ -68,7 +70,7 @@ try {
     # FreeBSD
     $FreeBSD = Invoke-WebRequest "https://download.freebsd.org/ftp/releases/amd64/amd64/"
 
-    if ($GetIMGs) {
+    if ($GetIMGs -or $GetRMDs) {
         $ChromeOS = Invoke-WebRequest "https://dl.google.com/dl/edgedl/chromeos/recovery/cloudready_recovery.json" | ConvertFrom-Json
 
         $ChromeOSdir = "Installation-Discs"
@@ -299,12 +301,16 @@ try {
             Remove-Item -Recurse -Force "Installation-Discs/Linux/$folder/"
         }
 
-        if ($GetIMGs) {
+        if ($GetIMGs -or $GetRMDs) {
             $ChromeOSZIP = Get-ChildItem $ChromeOSdir | Where-Object Name -Match "chromeos_\d+.\d+.\d+_reven_recovery_stable-channel_mp-v\d+.bin.zip"
             $ChromeOSfile = $ChromeOSZIP.Name -replace ".zip", ""
             Expand-Archive -Path $ChromeOSZIP -DestinationPath $ChromeOSdir
             Remove-Item $ChromeOSZIP
+        }
+        if ($GetIMGs) {
             Move-Item "$ChromeOSdir/$ChromeOSfile" "$ChromeOSdir/$($ChromeOSfile -replace ".bin",".img")"
+        } elseif ($GetRMDs) {
+            Move-Item "$ChromeOSdir/$ChromeOSfile" "$ChromeOSdir/$($ChromeOSfile -replace ".bin",".RMD")"
         }
     }
 }
