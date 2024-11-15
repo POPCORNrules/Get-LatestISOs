@@ -296,7 +296,11 @@ try {
             Remove-Item -Recurse -Force "Other/$folder/"
         }
 
-        $(Get-ChildItem "Installation-Discs/Linux/Fedora" -Directory | Where-Object Name -match 'Fedora-.*$') | ForEach-Object {Move-Item "$_/*.iso" "Installation-Discs/Linux/Fedora/"}
+        $(Get-ChildItem "Installation-Discs/Linux/Fedora" -Directory | Where-Object Name -match 'Fedora-.*$') | ForEach-Object {
+            Move-Item "$_/*.iso" "Installation-Discs/Linux/Fedora/"
+            Remove-Item $_
+        }
+
         foreach ($folder in $((Get-ChildItem -Directory "Installation-Discs/Linux").Name | Where-Object { $_ -notmatch "(Archlinux|Fedora|Ubuntu|Gentoo|Zorin-OS)$" })) {
             Remove-Item -Recurse -Force "Installation-Discs/Linux/$folder/"
         }
