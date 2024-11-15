@@ -5,7 +5,7 @@ param (
     [switch]
     $GetIMGs,
     [switch]
-    $GetRMDs
+    $GetRMDs,
     [switch]
     $GetWin10,
     [switch]
