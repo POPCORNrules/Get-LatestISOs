@@ -1,4 +1,4 @@
-#!/bin/env pwsh
+#!/bin/env -S pwsh -NoProfile
 param (
     [switch]
     $SkipDownload,
