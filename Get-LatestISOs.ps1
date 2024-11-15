@@ -245,21 +245,21 @@ try {
         $ISOs += , @( $latestEndeavor, "dir=$Endeavordir" )
     }
     
-    $Silverbluedir = "Installation-Discs/Linux"
+    $Silverbluedir = "Installation-Discs/Linux/Fedora"
     $latestSilverblue = ($Silverblue.links | Where-Object href -match 'Fedora-silverblue-ostree-x86_64.*\d.torrent' | Select-Object -Last 1).HREF
     $latestSilverblueISO = $latestSilverblue -split '/' | Select-Object -Last 1
     $oldISO = (Get-ChildItem $Silverbluedir | Where-Object Name -Match "Fedora-silverblue-ostree-x86_64.*.iso").Name
 
-    if (!($oldISO -match $latestSilverblueISO)) {
+    if (!(($oldISO -split '-' | Select-Object -Index 4) -match ($latestSilverblueISO -split '-' -replace '.torrent',''| Select-Object -Index 4))) {
         $ISOs += , @( $latestSilverblue, "dir=$Silverbluedir", "select-file=2" )
     }
 
-    $Kinoitedir = "Installation-Discs/Linux"
+    $Kinoitedir = "Installation-Discs/Linux/Fedora"
     $latestKinoite = ($Kinoite.links | Where-Object href -match 'Fedora-Kinoite-ostree-x86_64.*\d.torrent' | Select-Object -Last 1).HREF
     $latestKinoiteISO = $latestKinoite -split '/' | Select-Object -Last 1
     $oldISO = (Get-ChildItem $Kinoitedir | Where-Object Name -Match "Fedora-Kinoite-ostree-x86_64.*.iso").Name
 
-    if (!($oldISO -match $latestKinoiteISO)) {
+    if (!(($oldISO -split '-' | Select-Object -Index 4) -match ($latestKinoiteISO -split '-' -replace '.torrent',''| Select-Object -Index 4))) {
         $ISOs += , @( $latestKinoite, "dir=$Kinoitedir", "select-file=2" )
     }
     $voiddir = "Installation-Discs/Linux"
@@ -296,7 +296,7 @@ try {
             Remove-Item -Recurse -Force "Other/$folder/"
         }
 
-        $(Get-ChildItem "Installation-Discs/Linux" -Directory | Where-Object Name -match 'Fedora-.*$') | ForEach-Object {Move-Item "$_/*.iso" "Installation-Discs/Linux/Fedora/"}
+        $(Get-ChildItem "Installation-Discs/Linux/Fedora" -Directory | Where-Object Name -match 'Fedora-.*$') | ForEach-Object {Move-Item "$_/*.iso" "Installation-Discs/Linux/Fedora/"}
         foreach ($folder in $((Get-ChildItem -Directory "Installation-Discs/Linux").Name | Where-Object { $_ -notmatch "(Archlinux|Fedora|Ubuntu|Gentoo|Zorin-OS)$" })) {
             Remove-Item -Recurse -Force "Installation-Discs/Linux/$folder/"
         }
