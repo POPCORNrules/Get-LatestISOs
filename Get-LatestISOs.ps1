@@ -24,10 +24,7 @@ if (!($isLinux)) {
     $aria2_dir = ("$temp\aria2-*\" | Resolve-Path).Path
 }
 if ($GetWin10 -or $GetWin11) {
-    $latestfidoRelease = Invoke-WebRequest https://github.com/pbatard/Fido/releases/latest -Headers @{"Accept" = "application/json" }
-    $fidojson = $latestfidoRelease.Content | ConvertFrom-Json
-    $latestfidoVersion = $fidojson.tag_name
-    Invoke-WebRequest "https://github.com/pbatard/Fido/archive/refs/tags/$latestfidoVersion.zip" -OutFile "$temp/fido.zip"
+    Invoke-WebRequest "https://github.com/ave9858/Fido/archive/refs/heads/master.zip" -OutFile "$temp/fido.zip"
     Expand-Archive $temp/fido.zip -DestinationPath $temp
     $fido_dir = ("$temp\Fido-*\" | Resolve-Path).Path
 
@@ -285,7 +282,7 @@ try {
             & $aria2_dir/aria2c.exe --seed-time=0 -i "./links.txt" -c -j2 --rpc-save-upload-metadata false --bt-remove-unselected-file true
             Remove-Item -Recurse -Force "$aria2_dir", "$temp/aria2.zip"
         }
-        if ($GetWin10) {
+        if ($GetWin10 -or $GetWin11) {
             Remove-Item -Recurse -Force "$fido_dir", "$temp/fido.zip"
         }
         Get-ChildItem . -recurse -include *.torrent | Remove-Item
